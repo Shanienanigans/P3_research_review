@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> fragments/html_header}}
+
+<body>
+
+    {{> fragments/top_bar}}
+
+    <div class="container content-center">
+
+        <h2>All Users</h2>
+
+        {{#isNoContent}}
+            {{> fragments/no_content_message}}
+        {{/isNoContent}}
+
+        <div class="user-list">
+            {{#users}}
+                <div class="user-card"
+                     style="border:1px solid #ddd; border-radius:8px; padding:12px; margin:10px 0;">
+
+                    <p><strong>{{firstName}} {{lastName}}</strong></p>
+                    <p><strong>Role:</strong> {{role}}</p>
+                    <p><strong>Institution:</strong> {{institution}}</p>
+
+                    <a href="/profile/{{userId}}" class="link">View Profile</a>
+                </div>
+            {{/users}}
+        </div>
+
+    </div>
+
+    {{> fragments/footer}}
+
+</body>
+</html>

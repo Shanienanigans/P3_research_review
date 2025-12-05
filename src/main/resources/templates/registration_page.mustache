@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> fragments/html_header}}
+
+<body class="auth-page">
+
+    <div class="auth-card">
+        <h1 class="auth-title">Create account</h1>
+        <p class="auth-subtitle">Join the Open Research Review Platform</p>
+
+        {{> fragments/error_message}}
+
+        <form method="post" action="/register" class="auth-form">
+
+            <label class="auth-label">
+                First name
+                <input name="firstName"
+                       class="auth-input"
+                       type="text"
+                       placeholder="Enter your first name"
+                       required>
+            </label>
+
+            <label class="auth-label">
+                Last name
+                <input name="lastName"
+                       class="auth-input"
+                       type="text"
+                       placeholder="Enter your last name"
+                       required>
+            </label>
+
+            <label class="auth-label">
+                Username
+                <input name="username"
+                       class="auth-input"
+                       type="text"
+                       placeholder="Choose a username"
+                       required>
+            </label>
+
+            <label class="auth-label">
+                Password
+                <input name="password"
+                       class="auth-input"
+                       type="password"
+                       placeholder="Enter a password"
+                       required>
+            </label>
+
+            <label class="auth-label">
+                Repeat password
+                <input name="passwordRepeat"
+                       class="auth-input"
+                       type="password"
+                       placeholder="Repeat your password"
+                       required>
+            </label>
+
+            <label class="auth-label">
+                Institution
+                <input name="institution"
+                       class="auth-input"
+                       type="text"
+                       placeholder="University / organization (optional)">
+            </label>
+
+            <label class="auth-label">
+                Role
+                <select name="role" class="auth-input" required>
+                    <!-- values MUST match ENUM('author','reviewer','admin') -->
+                    <option value="author">Researcher</option>
+                    <option value="reviewer">Reviewer</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </label>
+
+            <div class="auth-actions">
+                <button type="submit" class="auth-button-primary">
+                    Create account
+                </button>
+            </div>
+
+            <p class="auth-secondary-text">
+                Already have an account?
+                <a href="/login" class="auth-link">Log in</a>
+            </p>
+        </form>
+    </div>
+
+    {{> fragments/footer}}
+
+</body>
+</html>

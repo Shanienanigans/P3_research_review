@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> fragments/html_header}}
+
+<body>
+
+    {{> fragments/top_bar}}
+
+    <main class="page-main">
+
+        <!-- MATCHES paper.mustache + profile_page.mustache -->
+        <section class="page-card">
+
+            <h2 class="section-title">Write a Review</h2>
+
+            <form method="POST"
+                  action="/reviews/add/{{paperId}}"
+                  style="margin-top: 20px;">
+
+                <!-- SCORE + CONFIDENCE -->
+                <div style="display:flex; gap:16px; margin-bottom:20px;">
+                    <div style="flex:1;">
+                        <label class="profile-meta"><strong>Overall Score (1–5)</strong></label>
+                        <input type="number"
+                               name="overallScore"
+                               min="1" max="5" required
+                               style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;">
+                    </div>
+
+                    <div style="flex:1;">
+                        <label class="profile-meta"><strong>Confidence (1–5)</strong></label>
+                        <input type="number"
+                               name="confidence"
+                               min="1" max="5" required
+                               style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;">
+                    </div>
+                </div>
+
+                <!-- VERDICT -->
+                <div style="margin-bottom:20px;">
+                    <label class="profile-meta"><strong>Verdict</strong></label>
+                    <select name="verdict"
+                            style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px;">
+                        <option>Accept</option>
+                        <option>Weak Accept</option>
+                        <option>Borderline</option>
+                        <option>Weak Reject</option>
+                        <option>Reject</option>
+                    </select>
+                </div>
+
+                <!-- FEEDBACK -->
+                <div style="margin-bottom:25px;">
+                    <label class="profile-meta"><strong>Feedback</strong></label>
+                    <textarea name="textFeedback"
+                              required
+                              placeholder="Write your feedback..."
+                              style="width:100%; height:140px; padding:12px; border:1px solid #ddd; border-radius:6px; resize:vertical;"></textarea>
+                </div>
+
+                <!-- SUBMIT BUTTON (homepage style) -->
+                <button type="submit" class="btn-view"
+                        style="padding:10px 22px; border-radius:8px;">
+                    Submit Review
+                </button>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    {{> fragments/footer}}
+
+</body>
+</html>

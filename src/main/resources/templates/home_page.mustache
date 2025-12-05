@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> fragments/html_header}}
+
+<body>
+
+    {{> fragments/top_bar}}
+
+    <main class="page-main">
+        <section class="page-card">
+            <h1 class="page-title">Latest papers</h1>
+            <p class="page-subtitle">
+                Recently uploaded research from the community.
+            </p>
+
+            {{#isNoContent}}
+                {{> fragments/no_content_message}}
+            {{/isNoContent}}
+
+            {{^isNoContent}}
+                {{> fragments/papers_container}}
+            {{/isNoContent}}
+        </section>
+    </main>
+
+    {{> fragments/footer}}
+
+</body>
+</html>

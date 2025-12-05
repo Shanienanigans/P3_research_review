@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> fragments/html_header}}
+
+<body>
+
+    {{> fragments/top_bar}}
+
+    <main class="page-main">
+
+        <section class="page-card">
+
+            <!-- HEADER -->
+            <div class="paper-header" style="margin-bottom: 25px;">
+                <h1 class="paper-title" style="font-size: 28px; font-weight: 600;">
+                    {{paper.title}}
+                </h1>
+
+                <p class="paper-meta" style="color:#555; margin-top:8px;">
+                    By 
+                    <a href="/profile/{{paper.uploader.userId}}" class="link">
+                        {{paper.uploader.firstName}} {{paper.uploader.lastName}}
+                    </a>
+                    &nbsp;•&nbsp;
+                    <span>Uploaded: {{paper.uploadDate}}</span>
+                </p>
+
+                <p class="paper-meta" style="margin-top:4px;">
+                    <strong>Authors:</strong> {{paper.authors}}
+                </p>
+
+                <!-- DOWNLOAD BUTTON (now uses homepage button style) -->
+                <a href="/papers/{{paper.paperId}}/download"
+                   class="btn-view"
+                   style="display:inline-block; margin-top:15px;">
+                    📄 Download PDF
+                </a>
+            </div>
+
+
+            <!-- ABSTRACT -->
+            <h2 class="section-title" style="margin-top: 35px;">Abstract</h2>
+            <p class="paper-abstract" style="line-height: 1.6; color:#444;">
+                {{paper.abstractText}}
+            </p>
+
+
+            <!-- ACTION BUTTONS -->
+            <div style="display:flex; gap:12px; margin:25px 0 35px 0;">
+
+                <!-- Write Review (homepage-style blue button) -->
+                <a href="/reviews/add/{{paper.paperId}}"
+                   class="btn-review">
+                    ✏️ Write a Review
+                </a>
+
+                <!-- View All Reviews (homepage-style gray button) -->
+                <a href="/reviews/{{paper.paperId}}"
+                   class="btn-view"
+                   style="background:#f1f3f4; color:#202124;">
+                    📚 View All Reviews
+                </a>
+
+            </div>
+
+
+            <!-- REVIEWS -->
+            <h2 class="section-title" style="margin-top: 20px;">Reviews</h2>
+
+            {{#reviews}}
+                <div class="review-card"
+                     style="background:#fafafa; border:1px solid #eee; border-radius:8px; padding:18px; margin-bottom:18px;">
+
+                    <p>
+                        <strong>Reviewer:</strong>
+                        <a href="/profile/{{reviewer.userId}}" class="link">
+                            {{reviewer.firstName}} {{reviewer.lastName}}
+                        </a>
+                    </p>
+
+                    <p><strong>Score:</strong> {{overallScore}} / 5</p>
+                    <p><strong>Verdict:</strong> {{verdict}}</p>
+                    <p style="margin-top:8px;">{{feedback}}</p>
+                </div>
+            {{/reviews}}
+
+            {{^reviews}}
+                <p style="color:#777;">No reviews yet. Be the first to review this paper.</p>
+            {{/reviews}}
+
+        </section>
+
+    </main>
+
+    {{> fragments/footer}}
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> fragments/html_header}}
+
+<body>
+
+    {{> fragments/top_bar}}
+
+    <main class="page-main">
+        <section class="page-card">
+            <h1 class="page-title">All Papers</h1>
+            <p class="page-subtitle">
+                Browse and search all submissions on the platform.
+            </p>
+
+            {{#isNoContent}}
+                {{> fragments/no_content_message}}
+            {{/isNoContent}}
+
+            {{^isNoContent}}
+                {{> fragments/papers_container}}
+            {{/isNoContent}}
+
+        </section>
+    </main>
+
+    {{> fragments/footer}}
+
+</body>
+</html>

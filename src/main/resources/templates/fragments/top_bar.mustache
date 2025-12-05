@@ -1,0 +1,36 @@
+<nav class="navbar">
+    <div class="nav-left">
+        <a href="/" class="nav-logo">Open Research Review Platform</a>
+
+        <form method="get" action="/search" class="nav-search">
+            <input name="query" type="text" placeholder="Search papers, authors..." id="liveSearchInput">
+            <button type="submit">
+                <i class="fas fa-search"></i>
+            </button>
+        </form>
+    </div>
+
+    <div class="nav-right">
+        <a href="/">Home</a>
+        <a href="/papers">All Papers</a>
+        <a href="/papers/upload">Upload Paper</a>
+
+        {{#isLoggedIn}}
+            <!-- Show profile name + logout -->
+            <a href="/profile" class="nav-profile">
+                👤 {{userFirstName}}
+            </a>
+            <a href="/logout" class="nav-logout" style="color:#c0392b;">
+                Logout
+            </a>
+        {{/isLoggedIn}}
+
+        {{^isLoggedIn}}
+            <!-- Show login only when NOT logged in -->
+            <a href="/login">Login</a>
+        {{/isLoggedIn}}
+    </div>
+</nav>
+
+<!-- Live search results box -->
+<div id="liveSearchResults" class="live-search-box" style="display:none;"></div>

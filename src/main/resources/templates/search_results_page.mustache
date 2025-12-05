@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> fragments/html_header}}
+
+<body>
+
+{{> fragments/top_bar}}
+
+<main class="page-main">
+
+    <section class="page-card">
+
+        <h1 class="page-title">Search results</h1>
+        <p class="page-subtitle">
+            Showing matches for: <strong>{{query}}</strong>
+        </p>
+
+        {{#isNoContent}}
+            <p class="content-center" style="color: gray;">No results found.</p>
+        {{/isNoContent}}
+
+        {{^isNoContent}}
+            {{> fragments/papers_container}}
+        {{/isNoContent}}
+
+    </section>
+
+</main>
+
+{{> fragments/footer}}
+
+</body>
+</html>

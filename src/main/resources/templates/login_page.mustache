@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> fragments/html_header}}
+
+<body class="auth-page">
+
+    <div class="auth-card">
+        <h1 class="auth-title">Log in</h1>
+        <p class="auth-subtitle">to start reviewing and publishing</p>
+
+        {{> fragments/error_message}}
+
+        <form method="post" action="/login" class="auth-form">
+
+            <label class="auth-label">
+                Username
+                <input name="username"
+                       class="auth-input"
+                       type="text"
+                       placeholder="Enter your username">
+            </label>
+
+            <label class="auth-label">
+                Password
+                <input name="password"
+                       class="auth-input"
+                       type="password"
+                       placeholder="Enter your password">
+            </label>
+
+            <div class="auth-actions">
+                <button type="submit" class="auth-button-primary">
+                    Log in
+                </button>
+            </div>
+
+            <p class="auth-secondary-text">
+                Don’t have an account?
+                <a href="/register" class="auth-link">Sign up now</a>
+            </p>
+        </form>
+    </div>
+
+    {{> fragments/footer}}
+
+</body>
+</html>

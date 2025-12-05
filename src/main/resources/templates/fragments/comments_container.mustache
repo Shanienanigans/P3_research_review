@@ -1,0 +1,12 @@
+<div class="comments">
+
+    {{#comments}}
+        {{> fragments/comment}}
+    {{/comments}}
+
+    <form method="post" action="/paper/{{paperId}}/comment">
+        <input name="comment" class="short-input full" type="text"
+               placeholder="Add a comment…" required>
+    </form>
+
+</div>

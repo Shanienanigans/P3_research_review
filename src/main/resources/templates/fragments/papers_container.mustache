@@ -1,0 +1,9 @@
+<div class="papers-list">
+    {{#papers}}
+        {{> fragments/basic_paper}}
+    {{/papers}}
+
+    {{^papers}}
+        <p style="text-align:center;color:gray;">No papers found.</p>
+    {{/papers}}
+</div>

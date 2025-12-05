@@ -1,0 +1,32 @@
+<div class="container framed">
+    <div class="paper-form">
+        <form method="post" action="/paper/upload" enctype="multipart/form-data">
+
+            <input name="title" 
+                   class="short-input full" 
+                   type="text" 
+                   placeholder="Paper Title" 
+                   required>
+
+            <textarea name="abstract" 
+                      class="framed" 
+                      placeholder="Abstract" 
+                      rows="5"
+                      required></textarea>
+
+            <input name="authors" 
+                   class="short-input full" 
+                   type="text" 
+                   placeholder="Authors (comma-separated)" 
+                   required>
+
+            <input name="file" 
+                   class="short-input full" 
+                   type="file" 
+                   accept="application/pdf" 
+                   required>
+
+            <button type="submit" class="action-button">Upload Paper</button>
+        </form>
+    </div>
+</div>

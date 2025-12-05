@@ -1,0 +1,45 @@
+<div class="paper-card">
+
+    <!-- Thumbnail -->
+    <img src="/paper_thumbs/{{thumbnail}}"
+         class="paper-thumb"
+         alt="Paper thumbnail">
+
+    <div class="paper-content">
+
+        <h3 class="paper-title">
+            <a href="/papers/{{paperId}}">{{title}}</a>
+        </h3>
+
+        <p class="paper-abstract">
+            {{abstractSnippet}}
+        </p>
+
+        <div class="paper-meta">
+            <span class="paper-author">
+                👤 {{uploader.firstName}} {{uploader.lastName}}
+            </span>
+
+            <span class="paper-date">
+                📅 {{uploadDate}}
+            </span>
+
+            <span class="paper-score">
+                ⭐ {{avgScore}}
+            </span>
+
+            <span class="paper-reviews">
+                📝 Reviews: {{reviewCount}}
+            </span>
+        </div>
+
+        <div class="paper-actions">
+            <a href="/papers/{{paperId}}" class="btn-view">View Paper</a>
+
+            {{^isOwner}}
+                <a href="/papers/{{paperId}}#review" class="btn-review">Write Review</a>
+            {{/isOwner}}
+        </div>
+
+    </div>
+</div>

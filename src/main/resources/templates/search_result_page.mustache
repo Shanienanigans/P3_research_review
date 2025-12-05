@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> fragments/html_header}}
+
+<body>
+
+    {{> fragments/top_bar}}
+
+    <div class="container content-center">
+
+        <h3>🔍 Search Results for: <em>{{query}}</em></h3>
+
+        {{#isNoContent}}
+            <p style="color: gray;">No papers matched your search.</p>
+        {{/isNoContent}}
+
+        {{^isNoContent}}
+            {{> fragments/papers_container}}
+        {{/isNoContent}}
+
+    </div>
+
+    {{> fragments/footer}}
+
+</body>
+</html>

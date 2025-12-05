@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> fragments/html_header}}
+
+<body>
+
+    {{> fragments/top_bar}}
+
+    <main class="page-main">
+
+        <!-- Profile header -->
+        <section class="page-card">
+            <div class="profile-header">
+                <h1 class="profile-header-name">
+                    {{user.firstName}} {{user.lastName}}
+                </h1>
+
+                <p class="profile-meta">
+                    <strong>Institution:</strong>
+                    {{#user.institution}}{{user.institution}}{{/user.institution}}
+                    {{^user.institution}}Not specified{{/user.institution}}
+                </p>
+
+                <p class="profile-meta">
+                    <strong>Role:</strong> {{user.role}}
+                </p>
+
+                <p class="profile-meta">
+                    <strong>Papers:</strong> {{papers.size}}
+                    &nbsp;&nbsp;•&nbsp;&nbsp;
+                    <strong>Reviews:</strong> {{reviews.size}}
+                </p>
+            </div>
+        </section>
+
+        <!-- Uploaded Papers -->
+        <section class="page-card">
+            <h2 class="section-title">Uploaded papers</h2>
+
+            {{#papers}}
+                {{> fragments/profile_paper}}
+            {{/papers}}
+
+            {{^papers}}
+                <p class="profile-meta">No papers uploaded yet.</p>
+            {{/papers}}
+        </section>
+
+        <!-- Submitted Reviews -->
+        <section class="page-card">
+            <h2 class="section-title">Submitted reviews</h2>
+
+            {{#reviews}}
+                <div class="review-card">
+                    <p>
+                        <strong>Paper:</strong>
+                        <a href="/papers/{{paperId}}" class="link">View Paper</a>
+                    </p>
+                    <p><strong>Score:</strong> {{overallScore}} / 5</p>
+                    <p><strong>Verdict:</strong> {{verdict}}</p>
+                    <p>{{feedback}}</p>
+                </div>
+            {{/reviews}}
+
+            {{^reviews}}
+                <p class="profile-meta">No reviews submitted.</p>
+            {{/reviews}}
+        </section>
+
+    </main>
+
+    {{> fragments/footer}}
+
+</body>
+</html>

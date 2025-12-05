@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> fragments/html_header}}
+
+<body>
+
+    {{> fragments/top_bar}}
+
+    <main class="page-main">
+        <section class="page-card">
+            <h1 class="page-title">Upload a new paper</h1>
+            <p class="page-subtitle">
+                Share your work with reviewers and the research community.
+            </p>
+
+            {{> fragments/error_message}}
+
+            <!-- Upload form -->
+            <form method="post"
+                  action="/papers/upload"
+                  enctype="multipart/form-data"
+                  class="auth-form">
+
+                <label class="auth-label">
+                    Paper title
+                    <input name="title"
+                           class="auth-input"
+                           type="text"
+                           placeholder="Enter the paper title"
+                           required>
+                </label>
+
+                <label class="auth-label">
+                    Abstract
+                    <textarea name="abstract"
+                              class="auth-input"
+                              rows="5"
+                              placeholder="Short summary of the paper"
+                              required></textarea>
+                </label>
+
+                <label class="auth-label">
+                    Authors
+                    <input name="authors"
+                           class="auth-input"
+                           type="text"
+                           placeholder="Authors (comma-separated)"
+                           required>
+                </label>
+
+                <label class="auth-label">
+                    Upload PDF
+                    <input name="file"
+                           class="auth-input"
+                           type="file"
+                           accept=".pdf"
+                           required>
+                </label>
+
+                <div class="auth-actions">
+                    <button type="submit" class="auth-button-primary">
+                        Submit paper
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    {{> fragments/footer}}
+
+</body>
+</html>

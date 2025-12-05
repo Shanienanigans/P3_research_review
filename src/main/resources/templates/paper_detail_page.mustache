@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> fragments/html_header}}
+
+<body>
+
+    {{> fragments/top_bar}}
+
+    <!-- Paper details -->
+    <div class="container content-center narrow">
+
+        {{> fragments/error_message}}
+
+        {{#paper}}
+            {{> fragments/paper}}
+        {{/paper}}
+
+        {{^paper}}
+            {{> fragments/no_content_message}}
+        {{/paper}}
+
+        <!-- Reviews section -->
+        <div class="section">
+            <h3>Reviews</h3>
+
+            <a href="/reviews/{{paper.paperId}}" class="link">View all reviews</a>
+
+            {{#paper.reviews}}
+                <div class="review-card">
+                    <p><strong>Reviewer:</strong> {{reviewerName}}</p>
+                    <p><strong>Score:</strong> {{overallScore}} / 5</p>
+                    <p>{{feedback}}</p>
+                </div>
+            {{/paper.reviews}}
+
+            {{^paper.reviews}}
+                <p style="color: gray;">No reviews yet. Be the first to review this paper.</p>
+            {{/paper.reviews}}
+
+        </div>
+
+        <!-- Comments -->
+        <div class="section">
+            <h3>Discussion</h3>
+            {{> fragments/comments_container}}
+        </div>
+
+    </div>
+
+    {{> fragments/footer}}
+
+</body>
+</html>

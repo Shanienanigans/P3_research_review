@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> fragments/html_header}}
+
+<body>
+
+    {{> fragments/top_bar}}
+
+    <div class="container content-center" style="max-width: 650px;">
+
+        <h2>Manage Review Criteria</h2>
+
+        {{> fragments/error_message}}
+
+        <!-- Add criterion -->
+        <form method="post" action="/criteria/add">
+            <input name="name" class="short-input full" type="text"
+                   placeholder="Criterion name (e.g., Methodology, Contribution)" required>
+            <button type="submit" class="action-button">Add Criterion</button>
+        </form>
+
+        <hr>
+
+        <!-- List criteria -->
+        <h3>Existing Criteria</h3>
+
+        {{#criteria}}
+            <div class="criterion-item"
+                 style="border:1px solid #ddd; padding:12px; border-radius:8px; margin-top:10px;">
+
+                <p><strong>{{name}}</strong></p>
+
+                <a href="/criteria/delete/{{criterionId}}" class="link danger">
+                    Delete
+                </a>
+            </div>
+        {{/criteria}}
+
+        {{^criteria}}
+            <p style="color: gray;">No criteria added yet.</p>
+        {{/criteria}}
+
+    </div>
+
+    {{> fragments/footer}}
+
+</body>
+</html>
