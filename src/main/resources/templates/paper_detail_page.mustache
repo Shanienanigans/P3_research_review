@@ -39,24 +39,6 @@
 
         </div>
 
-        <!-- Comments -->
-        <<div class="section">
-            <h3>Discussion</h3>
-
-            {{#comments}}
-                {{> fragments/comment}}
-            {{/comments}}
-
-            {{^comments}}
-                <p style="color: gray;">No comments yet.</p>
-            {{/comments}}
-
-            <form method="post" action="/discussion/{{paper.paperId}}/add">
-                <input name="comment" class="short-input full" type="text"
-                    placeholder="Add a comment…" required>
-            </form>
-
-        </div>
 
 
     </div>

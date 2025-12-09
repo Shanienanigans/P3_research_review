@@ -49,10 +49,13 @@
             <div style="display:flex; gap:12px; margin:25px 0 35px 0;">
 
                 <!-- Write Review (homepage-style blue button) -->
-                <a href="/reviews/add/{{paper.paperId}}"
-                   class="btn-review">
-                    ✏️ Write a Review
-                </a>
+                    {{^isOwner}}
+                        <a href="/reviews/add/{{paper.paperId}}"
+                        class="btn-review">
+                            ✏️ Write a Review
+                        </a>
+                    {{/isOwner}}
+
 
                 <!-- View All Reviews (homepage-style gray button) -->
                 <a href="/reviews/{{paper.paperId}}"

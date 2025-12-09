@@ -121,14 +121,22 @@ public class PaperController {
 
         // Login info
         if (userService.isAuthenticated()) {
+            User user = userService.getLoggedInUser();
             mv.addObject("isLoggedIn", true);
-            mv.addObject("userFirstName", userService.getLoggedInUser().getFirstName());
+            mv.addObject("userFirstName", user.getFirstName());
+
+            // ⭐ ADD THIS — isOwner flag
+            boolean isOwner = user.getUserId().equals(p.getUploader().getUserId());
+            mv.addObject("isOwner", isOwner);
+
         } else {
             mv.addObject("isLoggedIn", false);
+            mv.addObject("isOwner", false);  // guests are never owners
         }
 
         return mv;
     }
+
 
     /* -------------------------------------------------------------
        DOWNLOAD PDF
