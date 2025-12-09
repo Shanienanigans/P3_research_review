@@ -811,3 +811,8 @@ textarea {
     padding: 10px 14px;
     margin-top: 8px;
 }
+
+.hidden {
+    display: none;
+}
+

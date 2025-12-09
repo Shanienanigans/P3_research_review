@@ -425,7 +425,7 @@ public class PaperService {
 
 
     // ---------------------------------------------------------
-    // 7. COMMENTS
+    // 7. COMMENTS (with threaded replies + reply counts)
     // ---------------------------------------------------------
     public List<Comment> getCommentsForPaper(String paperId) {
 
@@ -444,68 +444,103 @@ public class PaperService {
             ORDER BY c.createdAt ASC
         """;
 
-        Map<String, Comment> allComments = new LinkedHashMap<>();
+        // Store all comments so we can attach replies to parents
+        Map<String, Comment> all = new LinkedHashMap<>();
 
         try (Connection conn = dataSource.getConnection();
             PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, paperId);
+            ResultSet rs = ps.executeQuery();
 
-            try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
 
-                while (rs.next()) {
+                Comment c = new Comment(
+                    rs.getString("commentId"),
+                    rs.getString("paperId"),
+                    rs.getString("userId"),
+                    rs.getString("content"),
+                    rs.getString("createdAt"),
+                    userService.getUserById(rs.getString("userId")),
+                    rs.getString("parentCommentId")
+                );
 
-                    Comment comment = new Comment(
-                        rs.getString("commentId"),
-                        rs.getString("paperId"),
-                        rs.getString("userId"),
-                        rs.getString("content"),
-                        rs.getString("createdAt"),
-                        userService.getUserById(rs.getString("userId")),
-                        rs.getString("parentCommentId")   // NEW!
-                    );
-
-                    allComments.put(comment.getCommentId(), comment);
-                }
+                c.setReplies(new ArrayList<>());  // initialize empty list
+                all.put(c.getCommentId(), c);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // Build the threaded reply structure
-        List<Comment> topLevel = new ArrayList<>();
 
-        for (Comment c : allComments.values()) {
+        // ---------------------------------------------------------
+        // STEP 1 — attach each reply to its parent
+        // ---------------------------------------------------------
+        for (Comment c : all.values()) {
             String parentId = c.getParentCommentId();
 
-            if (parentId == null) {
-                topLevel.add(c);
-            } else {
-                Comment parent = allComments.get(parentId);
+            if (parentId != null) {
+                Comment parent = all.get(parentId);
                 if (parent != null) {
-                    if (parent.getReplies() == null) {
-                        parent.setReplies(new ArrayList<>());
-                    }
                     parent.getReplies().add(c);
                 }
             }
         }
 
-        // Compute replyCount here.
-        for (Comment c : topLevel) {
-            if (c.getReplies() != null) {
-                c.setReplyCount(c.getReplies().size());
-            } else {
-                c.setReplyCount(0);
+
+        // ---------------------------------------------------------
+        // STEP 2 — collect ONLY top-level comments
+        // ---------------------------------------------------------
+        List<Comment> topLevel = new ArrayList<>();
+
+        for (Comment c : all.values()) {
+            if (c.getParentCommentId() == null) {
+                topLevel.add(c);
             }
         }
 
-        return topLevel;
 
+        // ---------------------------------------------------------
+        // STEP 3 — recursively compute reply counts for each thread
+        // ---------------------------------------------------------
+        for (Comment c : topLevel) {
+            computeReplyCounts(c);
+        }
+
+        return topLevel;
     }
 
 
-        public boolean addComment(String paperId, String userId, String content, String parentCommentId) {
+
+    // ---------------------------------------------------------
+    // Recursive helper: compute replyCount for each comment
+    // replyCount = total number of replies in this entire thread
+    // ---------------------------------------------------------
+    private int computeReplyCounts(Comment c) {
+
+        if (c.getReplies() == null || c.getReplies().isEmpty()) {
+            c.setReplyCount(0);
+            return 0;
+        }
+
+        int total = c.getReplies().size(); // direct replies
+
+        // include deeper replies
+        for (Comment child : c.getReplies()) {
+            total += computeReplyCounts(child);
+        }
+
+        c.setReplyCount(total);
+        return total;
+    }
+
+
+
+    // ---------------------------------------------------------
+    // INSERT NEW COMMENT OR REPLY
+    // ---------------------------------------------------------
+    public boolean addComment(String paperId, String userId, String content, String parentCommentId) {
 
         final String sql = """
             INSERT INTO comment (paperId, userId, content, parentCommentId)

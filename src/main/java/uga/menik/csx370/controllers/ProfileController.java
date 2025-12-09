@@ -1,6 +1,10 @@
 package uga.menik.csx370.controllers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,7 +75,27 @@ public class ProfileController {
         mv.addObject("papers", uploads);
 
         List<Review> reviews = reviewService.getReviewsByUser(userId);
-        mv.addObject("reviews", reviews);
+
+        // Build a list of maps
+        List<Map<String, Object>> reviewViews = new ArrayList<>();
+
+        for (Review r : reviews) {
+            Map<String, Object> rv = new HashMap<>();
+            rv.put("reviewId", r.getReviewId());
+            rv.put("paperId", r.getPaperId());
+            rv.put("overallScore", r.getOverallScore());
+            rv.put("verdict", r.getVerdict());
+            rv.put("feedback", r.getFeedback());
+
+            // Add the paper title 
+            rv.put("paperTitle", reviewService.getPaperTitle(r.getPaperId()));
+
+            reviewViews.add(rv);
+        }
+
+        // Replace original reviews object with the enhanced list
+        mv.addObject("reviews", reviewViews);
+
 
         // Is the viewing user the owner of the profile?
         String loggedId = userService.isAuthenticated()

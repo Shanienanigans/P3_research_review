@@ -1,17 +1,48 @@
 <div class="discussion-reply">
+
     <div class="discussion-reply-avatar">
         <img src="{{user.profileImagePath}}" alt="Avatar of {{user.firstName}}">
     </div>
 
     <div class="discussion-reply-body">
+
+        <!-- Author -->
         <a href="/profile/{{user.userId}}" class="reply-author">
             {{user.firstName}} {{user.lastName}}
         </a>
 
+        <!-- Timestamp -->
         <div class="reply-date">{{createdAt}}</div>
 
+        <!-- Content -->
         <div class="reply-content">
             {{content}}
         </div>
+
+        <!-- ACTIONS: reply icon + reply count -->
+        <div class="discussion-actions">
+            <button type="button" class="far fa-comment"></button>
+            <span class="discussion-action-count">{{replyCount}}</span>
+        </div>
+
+        <!-- REPLY BOX -->
+        <form method="post" action="/discussion/{{paperId}}/add" class="reply-input-block">
+            <input type="hidden" name="parentCommentId" value="{{commentId}}">
+
+            <input id="reply-input-{{commentId}}"
+                   class="short-input full"
+                   name="comment"
+                   type="text"
+                   placeholder="Reply…"
+                   required>
+        </form>
+
+        <!-- Nested replies -->
+        <div class="discussion-replies">
+            {{#replies}}
+                {{> fragments/discussion_reply}}
+            {{/replies}}
+        </div>
+
     </div>
 </div>

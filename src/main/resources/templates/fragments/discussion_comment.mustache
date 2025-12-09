@@ -1,5 +1,5 @@
 <div class="discussion-thread">
-    
+
     <div class="discussion-avatar">
         <img src="{{user.profileImagePath}}">
     </div>
@@ -18,27 +18,30 @@
             {{content}}
         </div>
 
+        <!-- ACTIONS ROW (comment icon + reply count) -->
         <div class="discussion-actions">
-            <button type="button"
-                    class="far fa-comment"
-                    onclick="document.getElementById('reply-{{commentId}}').focus();">
-            </button>
+            <button type="button" class="far fa-comment"></button>
             <span class="discussion-action-count">{{replyCount}}</span>
         </div>
 
-        <!-- Replies -->
+        <!-- REPLY INPUT -->
+        <form method="post" action="/discussion/{{paperId}}/add" class="reply-input-block">
+            <input type="hidden" name="parentCommentId" value="{{commentId}}">
+
+            <input id="reply-{{commentId}}"
+                   name="comment"
+                   class="short-input full"
+                   type="text"
+                   placeholder="Reply…"
+                   required>
+        </form>
+
+        <!-- Nested replies -->
         <div class="discussion-replies">
             {{#replies}}
                 {{> fragments/discussion_reply}}
             {{/replies}}
         </div>
-
-        <!-- Reply box -->
-        <form method="post" action="/discussion/{{paperId}}/add">
-            <input type="hidden" name="parentCommentId" value="{{commentId}}">
-            <input id="reply-{{commentId}}" class="short-input full"
-                   name="comment" type="text" placeholder="Reply..." required>
-        </form>
 
     </div>
 </div>
