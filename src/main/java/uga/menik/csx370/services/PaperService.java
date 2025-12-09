@@ -9,7 +9,9 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -296,7 +298,7 @@ public class PaperService {
 
 
     // ---------------------------------------------------------
-    // 5. SORT PAPERS (FINAL FIXED VERSION)
+    // 5. SORT PAPERS 
     // ---------------------------------------------------------
     public List<Paper> sortPapers(String sortBy) {
 
@@ -429,56 +431,99 @@ public class PaperService {
 
         final String sql = """
             SELECT c.commentId,
-                   c.userId,
-                   c.content,
-                   DATE_FORMAT(
+                c.paperId,
+                c.userId,
+                c.content,
+                DATE_FORMAT(
                         CONVERT_TZ(c.createdAt, '+00:00', '-04:00'),
                         '%b %e, %Y %l:%i %p'
-                   ) AS createdAt
+                ) AS createdAt,
+                c.parentCommentId
             FROM comment c
             WHERE c.paperId = ?
             ORDER BY c.createdAt ASC
         """;
 
-        List<Comment> comments = new ArrayList<>();
+        Map<String, Comment> allComments = new LinkedHashMap<>();
 
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, paperId);
 
             try (ResultSet rs = ps.executeQuery()) {
 
                 while (rs.next()) {
-                    comments.add(new Comment(
-                            rs.getString("commentId"),
-                            paperId,
-                            rs.getString("userId"),
-                            rs.getString("content"),
-                            rs.getString("createdAt")
-                    ));
+
+                    Comment comment = new Comment(
+                        rs.getString("commentId"),
+                        rs.getString("paperId"),
+                        rs.getString("userId"),
+                        rs.getString("content"),
+                        rs.getString("createdAt"),
+                        userService.getUserById(rs.getString("userId")),
+                        rs.getString("parentCommentId")   // NEW!
+                    );
+
+                    allComments.put(comment.getCommentId(), comment);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return comments;
+        // Build the threaded reply structure
+        List<Comment> topLevel = new ArrayList<>();
+
+        for (Comment c : allComments.values()) {
+            String parentId = c.getParentCommentId();
+
+            if (parentId == null) {
+                topLevel.add(c);
+            } else {
+                Comment parent = allComments.get(parentId);
+                if (parent != null) {
+                    if (parent.getReplies() == null) {
+                        parent.setReplies(new ArrayList<>());
+                    }
+                    parent.getReplies().add(c);
+                }
+            }
+        }
+
+        // Compute replyCount here.
+        for (Comment c : topLevel) {
+            if (c.getReplies() != null) {
+                c.setReplyCount(c.getReplies().size());
+            } else {
+                c.setReplyCount(0);
+            }
+        }
+
+        return topLevel;
+
     }
 
-    public boolean addComment(String paperId, String userId, String content) {
+
+        public boolean addComment(String paperId, String userId, String content, String parentCommentId) {
 
         final String sql = """
-            INSERT INTO comment (paperId, userId, content)
-            VALUES (?, ?, ?)
+            INSERT INTO comment (paperId, userId, content, parentCommentId)
+            VALUES (?, ?, ?, ?)
         """;
 
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, paperId);
             ps.setString(2, userId);
             ps.setString(3, content);
+
+            if (parentCommentId == null || parentCommentId.isBlank()) {
+                ps.setNull(4, Types.INTEGER);
+            } else {
+                ps.setString(4, parentCommentId);
+            }
 
             return ps.executeUpdate() > 0;
 

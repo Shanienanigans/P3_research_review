@@ -1,0 +1,17 @@
+<div class="discussion-reply">
+    <div class="discussion-reply-avatar">
+        <img src="{{user.profileImagePath}}" alt="Avatar of {{user.firstName}}">
+    </div>
+
+    <div class="discussion-reply-body">
+        <a href="/profile/{{user.userId}}" class="reply-author">
+            {{user.firstName}} {{user.lastName}}
+        </a>
+
+        <div class="reply-date">{{createdAt}}</div>
+
+        <div class="reply-content">
+            {{content}}
+        </div>
+    </div>
+</div>

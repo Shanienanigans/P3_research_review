@@ -13,8 +13,11 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.List;
 
 import uga.menik.csx370.models.Paper;
+import uga.menik.csx370.models.Comment;
+import uga.menik.csx370.models.User;
 import uga.menik.csx370.services.PaperService;
 import uga.menik.csx370.services.ReviewService;
 import uga.menik.csx370.services.UserService;
@@ -154,15 +157,4 @@ public class PaperController {
         return mv;
     }
 
-    /* -------------------------------------------------------------
-       DISCUSSION POST
-    -------------------------------------------------------------- */
-    @PostMapping("/{paperId}/discussion/add")
-    public String addDiscussion(@PathVariable String paperId,
-                                @RequestParam String comment) {
-
-        System.out.println("DISCUSSION COMMENT RECEIVED: " + comment);
-
-        return "redirect:/papers/" + paperId;
-    }
 }

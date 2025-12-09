@@ -1,11 +1,9 @@
 <div class="discussion-thread">
-
-    <!-- Avatar -->
+    
     <div class="discussion-avatar">
-        <img src="{{user.profileImagePath}}" alt="{{user.firstName}}">
+        <img src="{{user.profileImagePath}}">
     </div>
 
-    <!-- Thread body -->
     <div class="discussion-thread-body">
 
         <div class="discussion-username">
@@ -20,13 +18,12 @@
             {{content}}
         </div>
 
-        <!-- Action row (comment button to focus reply box) -->
         <div class="discussion-actions">
             <button type="button"
                     class="far fa-comment"
                     onclick="document.getElementById('reply-{{commentId}}').focus();">
             </button>
-            <span class="discussion-action-count">{{repliesCount}}</span>
+            <span class="discussion-action-count">{{replyCount}}</span>
         </div>
 
         <!-- Replies -->
@@ -37,15 +34,10 @@
         </div>
 
         <!-- Reply box -->
-        <form method="post"
-              action="/discussion/{{paperId}}/add">
+        <form method="post" action="/discussion/{{paperId}}/add">
             <input type="hidden" name="parentCommentId" value="{{commentId}}">
-            <input id="reply-{{commentId}}"
-                   class="short-input full"
-                   name="comment"
-                   type="text"
-                   placeholder="Reply…"
-                   required>
+            <input id="reply-{{commentId}}" class="short-input full"
+                   name="comment" type="text" placeholder="Reply..." required>
         </form>
 
     </div>

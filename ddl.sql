@@ -43,13 +43,14 @@ CREATE TABLE IF NOT EXISTS comment (
     userId INT NOT NULL,
     content TEXT NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    parentCommentId INT NULL,
     PRIMARY KEY (commentId),
     FOREIGN KEY (paperId) REFERENCES paper(paperId),
     FOREIGN KEY (userId) REFERENCES user(userId)
 );
 
 -- ======================================
--- REVIEWS TABLE (final simplified version)
+-- REVIEWS TABLE 
 -- ======================================
 CREATE TABLE IF NOT EXISTS review (
     reviewId INT AUTO_INCREMENT,
