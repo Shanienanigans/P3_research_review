@@ -18,7 +18,34 @@
             {{/isNoContent}}
 
             {{^isNoContent}}
-                {{> fragments/papers_container}}
+
+                {{#hasFollowedPapers}}
+                    <h2 class="page-subtitle" style="margin-top: 24px;">
+                        Papers from authors you follow
+                    </h2>
+
+                    <div class="papers-list">
+                        {{#followedPapers}}
+                            {{> fragments/basic_paper}}
+                        {{/followedPapers}}
+                    </div>
+                {{/hasFollowedPapers}}
+
+                <h2 class="page-subtitle" style="margin-top: 32px;">
+                    {{#hasFollowedPapers}}More from the community{{/hasFollowedPapers}}
+                    {{^hasFollowedPapers}}All latest papers{{/hasFollowedPapers}}
+                </h2>
+
+                <div class="papers-list">
+                    {{#otherPapers}}
+                        {{> fragments/basic_paper}}
+                    {{/otherPapers}}
+
+                    {{^otherPapers}}
+                        <p style="text-align:center;color:gray;">No papers found.</p>
+                    {{/otherPapers}}
+                </div>
+
             {{/isNoContent}}
         </section>
     </main>

@@ -1,57 +1,105 @@
 package uga.menik.csx370.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import uga.menik.csx370.models.Paper;
+import uga.menik.csx370.models.BasicPaper;
+import uga.menik.csx370.models.User;
+import uga.menik.csx370.services.FollowService;
 import uga.menik.csx370.services.PaperService;
 import uga.menik.csx370.services.UserService;
-import uga.menik.csx370.models.BasicPaper;
 
+import java.util.*;
 
-import java.util.List;
-
-/**
- * Home page – shows the most recent uploaded papers.
- */
 @Controller
-@RequestMapping("/")
 public class HomeController {
 
     private final PaperService paperService;
     private final UserService userService;
+    private final FollowService followService;
 
     @Autowired
-    public HomeController(PaperService paperService, UserService userService) {
+    public HomeController(PaperService paperService,
+                          UserService userService,
+                          FollowService followService) {
         this.paperService = paperService;
         this.userService = userService;
+        this.followService = followService;
     }
 
-    /**
-     * GET /
-     * Show recent papers on the homepage.
-     */
-    @GetMapping
-    public ModelAndView homepage(@RequestParam(name = "error", required = false) String error) {
+    @GetMapping("/")
+    public ModelAndView home(@RequestParam(value = "error", required = false) String error) {
 
         ModelAndView mv = new ModelAndView("home_page");
 
-        // Add login info for top bar
-        if (userService.isAuthenticated()) {
+        // 登录信息（给 top bar 用）
+        User loggedIn = userService.getLoggedInUser();
+        if (loggedIn != null) {
             mv.addObject("isLoggedIn", true);
-            mv.addObject("userFirstName", userService.getLoggedInUser().getFirstName());
+            mv.addObject("userFirstName", loggedIn.getFirstName());
         } else {
             mv.addObject("isLoggedIn", false);
         }
 
-        mv.addObject("papers", paperService.getAllBasicPapers());
         mv.addObject("errorMessage", error);
+
+        // 拿到所有论文（按时间倒序）
+        List<BasicPaper> papers = paperService.getAllBasicPapers();
+        boolean noContent = (papers == null || papers.isEmpty());
+        mv.addObject("isNoContent", noContent);
+
+        if (noContent) {
+            // 一个论文都没有，直接返回
+            return mv;
+        }
+
+        // ===============================
+        // 计算“我关注的作者”的论文
+        // ===============================
+        String loggedInId = (loggedIn != null) ? loggedIn.getUserId() : null;
+        Set<String> followedIds = new HashSet<>();
+
+        if (loggedInId != null) {
+            followedIds.addAll(followService.getFollowedUserIds(loggedInId));
+        }
+
+        // 首页需要两个 list：followedPapers + otherPapers
+        List<Map<String, Object>> followedModels = new ArrayList<>();
+        List<Map<String, Object>> otherModels = new ArrayList<>();
+
+        for (BasicPaper p : papers) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("paperId", p.getPaperId());
+            map.put("title", p.getTitle());
+            map.put("abstractSnippet", p.getAbstractSnippet());
+            map.put("thumbnail", p.getThumbnail());
+            map.put("uploadDate", p.getUploadDate());
+            map.put("avgScore", p.getAvgScore());
+            map.put("reviewCount", p.getReviewCount());
+            map.put("uploader", p.getUploader());
+
+            boolean isOwner = (loggedInId != null &&
+                    loggedInId.equals(p.getUploader().getUserId()));
+            map.put("isOwner", isOwner);
+
+            boolean isFollowed = (loggedInId != null &&
+                    followedIds.contains(p.getUploader().getUserId()));
+            map.put("isFollowed", isFollowed);
+
+            // 关注作者的论文，最多 5 篇
+            if (isFollowed && followedModels.size() < 5) {
+                followedModels.add(map);
+            } else {
+                otherModels.add(map);
+            }
+        }
+
+        mv.addObject("hasFollowedPapers", !followedModels.isEmpty());
+        mv.addObject("followedPapers", followedModels);
+        mv.addObject("otherPapers", otherModels);
 
         return mv;
     }
-
 }

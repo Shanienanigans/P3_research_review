@@ -19,7 +19,8 @@
 
         <!-- Meta Info -->
         <div class="paper-meta">
-            <span class="paper-author">
+            <span class="paper-author"
+                  {{#isFollowed}}style="color: #e11d48;"{{/isFollowed}}>
                 👤 {{uploader.firstName}} {{uploader.lastName}}
             </span>
 
