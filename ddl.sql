@@ -18,7 +18,16 @@ CREATE TABLE IF NOT EXISTS user (
     profileImagePath VARCHAR(255) DEFAULT '/avatars/default.png',
     PRIMARY KEY (userId)
 );
-
+-- ======================================
+-- FOLLOW TABLE (USER FOLLOWS USER)
+-- ======================================
+CREATE TABLE IF NOT EXISTS follow (
+    followerId INT NOT NULL,
+    followeeId INT NOT NULL,
+    PRIMARY KEY (followerId, followeeId),
+    FOREIGN KEY (followerId) REFERENCES user(userId) ON DELETE CASCADE,
+    FOREIGN KEY (followeeId) REFERENCES user(userId) ON DELETE CASCADE
+);
 -- ======================================
 -- PAPERS TABLE
 -- ======================================

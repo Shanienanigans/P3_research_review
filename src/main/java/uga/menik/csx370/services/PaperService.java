@@ -10,6 +10,7 @@ import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -201,6 +202,26 @@ public class PaperService {
         }
 
         return list;
+    }
+    
+
+    // ---------------------------------------------------------
+    // LATEST PAPERS for HOME PAGE (top N)
+    // ---------------------------------------------------------
+    public List<BasicPaper> getLatestBasicPapers(int limit) {
+
+        // 已经按 uploadedAt DESC 排好序
+        List<BasicPaper> all = getAllBasicPapers();
+
+        if (all == null) {
+            return Collections.emptyList();
+        }
+
+        if (all.size() <= limit) {
+            return all;
+        }
+
+        return all.subList(0, limit);   // 只取前 limit 条
     }
 
     // ---------------------------------------------------------
@@ -753,6 +774,57 @@ public class PaperService {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+
+
+    // ---------------------------------------------------------
+    // 1.b UPDATE PAPER (title / abstract / authors / optional file)
+    // ---------------------------------------------------------
+    public boolean updatePaper(String paperId,
+                               String title,
+                               String abstractText,
+                               String authors,
+                               String newFilePathOrNull) {
+
+        String sql;
+
+        // 如果有新的 PDF 路径，就一起更新 filePath
+        if (newFilePathOrNull != null) {
+            sql = """
+                UPDATE paper
+                SET title = ?, abstract = ?, authors = ?, filePath = ?
+                WHERE paperId = ?
+            """;
+        } else {
+            // 否则只改元数据
+            sql = """
+                UPDATE paper
+                SET title = ?, abstract = ?, authors = ?
+                WHERE paperId = ?
+            """;
+        }
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, title);
+            ps.setString(2, abstractText);
+            ps.setString(3, authors);
+
+            if (newFilePathOrNull != null) {
+                ps.setString(4, newFilePathOrNull);
+                ps.setString(5, paperId);
+            } else {
+                ps.setString(4, paperId);
+            }
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

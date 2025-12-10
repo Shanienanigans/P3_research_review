@@ -13,12 +13,17 @@
     <div class="nav-right">
         <a href="/">Home</a>
         <a href="/papers">All Papers</a>
-        <a href="/papers/upload">Upload Paper</a>
+        <a href="/authors">Authors</a>
+        {{^isReviewer}}
+            <!-- 只要不是 reviewer（变量不存在 / false），都能看到 Upload -->
+            <a href="/papers/upload">Upload Paper</a>
+        {{/isReviewer}}
+
 
         {{#isLoggedIn}}
             <!-- Show profile name + logout -->
             <a href="/profile" class="nav-profile">
-                👤 {{userFirstName}}
+                <i class="fas fa-user" style="margin-right:4px;"></i>{{userFirstName}}
             </a>
             <a href="/logout" class="nav-logout" style="color:#c0392b;">
                 Logout

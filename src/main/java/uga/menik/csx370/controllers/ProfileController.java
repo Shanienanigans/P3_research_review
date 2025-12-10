@@ -45,6 +45,16 @@ public class ProfileController {
         //  Add login info
         mv.addObject("isLoggedIn", true);
         mv.addObject("userFirstName", current.getFirstName());
+        
+
+        //var user = userService.getLoggedInUser();
+        // add：role info// add：role info
+        String role = current.getRole();  // "researcher" / "reviewer" / "admin"
+        mv.addObject("userRole", role);
+        mv.addObject("isResearcher", "researcher".equalsIgnoreCase(role));
+        mv.addObject("isReviewer", "reviewer".equalsIgnoreCase(role));
+        mv.addObject("isAdmin", "admin".equalsIgnoreCase(role));
+
 
         return mv;
     }
@@ -61,6 +71,17 @@ public class ProfileController {
         if (userService.isAuthenticated()) {
             mv.addObject("isLoggedIn", true);
             mv.addObject("userFirstName", userService.getLoggedInUser().getFirstName());
+            
+            User loggedInUser = userService.getLoggedInUser();
+            // var user = userService.getLoggedInUser();
+            // add：role info// add：role info
+            String role = loggedInUser.getRole();  // "researcher" / "reviewer" / "admin"
+            mv.addObject("userRole", role);
+            mv.addObject("isResearcher", "researcher".equalsIgnoreCase(role));
+            mv.addObject("isReviewer", "reviewer".equalsIgnoreCase(role));
+            mv.addObject("isAdmin", "admin".equalsIgnoreCase(role));
+
+
         } else {
             mv.addObject("isLoggedIn", false);
         }
