@@ -35,7 +35,7 @@ public class AllPapersController {
 
         var papers = paperService.getAllBasicPapers();
 
-        // ⭐ Transform each paper into a model Map to include `isOwner`
+        
         List<Map<String, Object>> paperModels = new ArrayList<>();
 
         for (BasicPaper p : papers) {
@@ -50,7 +50,7 @@ public class AllPapersController {
             map.put("reviewCount", p.getReviewCount());
             map.put("uploader", p.getUploader());
 
-            // ⭐ IMPORTANT: determine whether logged-in user uploaded this paper
+            
             boolean isOwner = (loggedInId != null &&
                     loggedInId.equals(p.getUploader().getUserId()));
             map.put("isOwner", isOwner);

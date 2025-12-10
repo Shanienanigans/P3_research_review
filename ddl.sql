@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS review (
     overallScore INT CHECK (overallScore BETWEEN 1 AND 10),
     confidence INT CHECK (confidence BETWEEN 1 AND 5),
     verdict ENUM('accept','weak_accept','borderline','weak_reject','reject') NOT NULL,
-    feedback TEXT NOT NULL,   -- ⭐ FIXED: now matches your Spring model
+    feedback TEXT NOT NULL,   
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (reviewId),
     FOREIGN KEY (paperId) REFERENCES paper(paperId),
@@ -115,19 +115,3 @@ CREATE TABLE review_criterion_score (
 CREATE INDEX idx_paper_title ON paper(title);
 CREATE INDEX idx_review_paperId ON review(paperId);
 CREATE INDEX idx_user_username ON user(username);
-
-
--- ======================================
--- SEED BASIC USERS
--- ======================================
-INSERT INTO user (username, password, firstName, lastName, role)
-VALUES 
-('admin', '$2a$10$H/jN2sxd6yBvDN3wyKvL2.KHiB/YxYoT0kZd1.cwEQZ5h4EJTlTIG', 'System', 'Admin', 'admin')
-ON DUPLICATE KEY UPDATE username=username;
-
-INSERT INTO user (username, password, firstName, lastName)
-VALUES 
-('alice', '$2a$10$H/jN2sxd6yBvDN3wyKvL2.KHiB/YxYoT0kZd1.cwEQZ5h4EJTlTIG', 'Alice', 'Anderson'),
-('bob',   '$2a$10$H/jN2sxd6yBvDN3wyKvL2.KHiB/YxYoT0kZd1.cwEQZ5h4EJTlTIG', 'Bob', 'Baker'),
-('cara',  '$2a$10$H/jN2sxd6yBvDN3wyKvL2.KHiB/YxYoT0kZd1.cwEQZ5h4EJTlTIG', 'Cara', 'Chen')
-ON DUPLICATE KEY UPDATE username=username;
