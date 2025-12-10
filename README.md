@@ -29,6 +29,8 @@ This project develops a web-based Open Review Platform where users can upload re
 | Authors | Implemented Authors page to view and search authors | Jichao |
 | Follow | Implemented ability to follow users so followed users apear first within homepage | Jichao|
 | Reviews | Implemented ability to write reviews (reviewers only) | Dominic |
+| Sample Data | Generated sample data to populate the site | Chayenne|
+
 
 
 ## How-To Run Code
