@@ -57,7 +57,7 @@ VALUES
 ('hongzhan.lin',   '$2a$10$H/jN2sxd6yBvDN3wyKvL2.KHiB/YxYoT0kZd1.cwEQZ5h4EJTlTIG',
  'Hongzhan',       'Lin',    'author', 'Various'),
 ('loic.fosse',     '$2a$10$H/jN2sxd6yBvDN3wyKvL2.KHiB/YxYoT0kZd1.cwEQZ5h4EJTlTIG',
- 'Loïc',           'Fosse',  'author', 'Various')
+ 'Loic',           'Fosse',  'author', 'Various')
 ON DUPLICATE KEY UPDATE username = username;
 
 
@@ -269,7 +269,7 @@ VALUES
 
 ('Statistical Deficiency for Task Inclusion Estimation',
  'We formulate task inclusion estimation as a problem of statistical deficiency.',
- 'Loïc Fosse',
+ 'Loic Fosse',
  @loic,
  '/uploads/paper30.pdf')
 ON DUPLICATE KEY UPDATE title = title;
