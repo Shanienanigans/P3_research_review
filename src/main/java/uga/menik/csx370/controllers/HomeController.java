@@ -34,14 +34,33 @@ public class HomeController {
 
         ModelAndView mv = new ModelAndView("home_page");
 
-        // 登录信息（给 top bar 用）
-        User loggedIn = userService.getLoggedInUser();
-        if (loggedIn != null) {
+         User loggedIn = userService.getLoggedInUser();
+
+        // Add login info for top bar
+        if (userService.isAuthenticated()) {
+            var user = userService.getLoggedInUser();
+
             mv.addObject("isLoggedIn", true);
-            mv.addObject("userFirstName", loggedIn.getFirstName());
+            mv.addObject("userFirstName", userService.getLoggedInUser().getFirstName());
+
+            // add：role info
+            String role = user.getRole();  // "researcher" / "reviewer" / "admin"
+            mv.addObject("userRole", role);
+            mv.addObject("isResearcher", "researcher".equalsIgnoreCase(role));
+            mv.addObject("isReviewer", "reviewer".equalsIgnoreCase(role));
+            mv.addObject("isAdmin", "admin".equalsIgnoreCase(role));
+
         } else {
             mv.addObject("isLoggedIn", false);
         }
+        
+        // get latest n paper，like 5
+        // mv.addObject("papers", paperService.getLatestBasicPapers(5));
+
+        List<BasicPaper> latestPapers = paperService.getLatestBasicPapers(5);
+        mv.addObject("papers", latestPapers);
+        mv.addObject("isNoContent", latestPapers.isEmpty());
+
 
         mv.addObject("errorMessage", error);
 

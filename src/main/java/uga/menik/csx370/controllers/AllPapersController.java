@@ -65,6 +65,15 @@ public class AllPapersController {
         if (loggedIn != null) {
             mv.addObject("isLoggedIn", true);
             mv.addObject("userFirstName", loggedIn.getFirstName());
+
+            var user = userService.getLoggedInUser();
+            // add：role info// add：role info
+            String role = user.getRole();  // "researcher" / "reviewer" / "admin"
+            mv.addObject("userRole", role);
+            mv.addObject("isResearcher", "researcher".equalsIgnoreCase(role));
+            mv.addObject("isReviewer", "reviewer".equalsIgnoreCase(role));
+            mv.addObject("isAdmin", "admin".equalsIgnoreCase(role));
+
         } else {
             mv.addObject("isLoggedIn", false);
         }
