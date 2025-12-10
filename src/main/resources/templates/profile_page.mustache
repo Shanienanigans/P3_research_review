@@ -27,7 +27,7 @@
 
                 <p class="profile-meta">
                     <strong>Papers:</strong> {{papers.size}}
-                    &nbsp;&nbsp;•&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;;&nbsp
                     <strong>Reviews:</strong> {{reviews.size}}
                 </p>
             </div>
@@ -49,18 +49,22 @@
         <!-- Submitted Reviews -->
         <section class="page-card">
             <h2 class="section-title">Submitted reviews</h2>
+        {{#reviews}}
+            <div class="review-card">
 
-            {{#reviews}}
-                <div class="review-card">
-                    <p>
-                        <strong>Paper:</strong>
-                        <a href="/papers/{{paperId}}" class="link">View Paper</a>
-                    </p>
-                    <p><strong>Score:</strong> {{overallScore}} / 5</p>
-                    <p><strong>Verdict:</strong> {{verdict}}</p>
-                    <p>{{feedback}}</p>
-                </div>
-            {{/reviews}}
+                <p><strong>Paper:</strong> {{paperTitle}}</p>
+
+                <p><strong>Score:</strong> {{overallScore}} / 5</p>
+                <p><strong>Verdict:</strong> {{verdict}}</p>
+                <p>{{feedback}}</p>
+
+                <a href="/papers/{{paperId}}" class="btn-view" style="margin-top: 10px; display: inline-block;">
+                    View Paper
+                </a>
+
+            </div>
+        {{/reviews}}
+
 
             {{^reviews}}
                 <p class="profile-meta">No reviews submitted.</p>

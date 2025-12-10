@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+{{> fragments/html_header}}
+
+<body>
+
+    {{> fragments/top_bar}}
+
+    <div class="container content-center">
+
+        <h2>All Authors</h2>
+
+        <!-- 搜索表单 -->
+        <form method="get" action="/authors"
+              class="search-form"
+              style="margin: 15px 0;">
+            <input type="text"
+                   name="q"
+                   placeholder="Search authors by name or institution..."
+                   value="{{query}}"
+                   style="padding:6px 8px; width:260px;">
+            <button type="submit" class="btn-primary">Search</button>
+        </form>
+
+        {{#isNoContent}}
+            {{> fragments/no_content_message}}
+        {{/isNoContent}}
+
+        <div class="user-list">
+            {{#authors}}
+                <div class="user-card"
+                     style="border:1px solid #ddd;
+                            border-radius:8px;
+                            padding:12px;
+                            margin:10px 0;
+                            display:flex;
+                            align-items:center;
+                            gap:16px;">
+
+                    <img src="{{profileImagePath}}"
+                         alt="Avatar for {{firstName}} {{lastName}}"
+                         style="width:48px;
+                                height:48px;
+                                border-radius:50%;
+                                object-fit:cover;">
+
+                    <div style="flex:1;">
+                        <p style="margin:0;">
+                            <strong>{{firstName}} {{lastName}}</strong>
+                        </p>
+                        
+                        
+                    </div>
+
+                    <div style="display:flex;
+                                flex-direction:column;
+                                align-items:flex-end;
+                                gap:6px;">
+
+                        <!-- 资料页链接：点击作者进入 profile -->
+                        <a href="/profile/{{userId}}" class="link">
+                            View Profile
+                        </a>
+
+                        <!-- Follow / Unfollow，只对已登录且不是自己显示 -->
+                        {{#isLoggedIn}}
+                            {{^isSelf}}
+
+                                {{#isFollowed}}
+                                    <form method="post"
+                                          action="/authors/{{userId}}/follow"
+                                          style="margin:0;">
+                                        <input type="hidden"
+                                               name="action"
+                                               value="unfollow">
+                                        <button type="submit"
+                                                class="btn-secondary">
+                                            Unfollow
+                                        </button>
+                                    </form>
+                                {{/isFollowed}}
+
+                                {{^isFollowed}}
+                                    <form method="post"
+                                          action="/authors/{{userId}}/follow"
+                                          style="margin:0;">
+                                        <input type="hidden"
+                                               name="action"
+                                               value="follow">
+                                        <button type="submit"
+                                                class="btn-primary">
+                                            Follow
+                                        </button>
+                                    </form>
+                                {{/isFollowed}}
+
+                            {{/isSelf}}
+                        {{/isLoggedIn}}
+                    </div>
+
+                </div>
+            {{/authors}}
+        </div>
+
+    </div>
+
+    {{> fragments/footer}}
+
+</body>
+</html>

@@ -221,6 +221,65 @@ public class UserService {
         return getUsersByRole("author"); 
     }
 
+    public List<User> searchAuthors(String keyword) {
+
+        List<User> authors = new ArrayList<>();
+
+        if (keyword == null || keyword.isBlank()) {
+            // 
+            return getResearchers();
+        }
+
+        String like = "%" + keyword.toLowerCase() + "%";
+
+        final String sql = """
+            SELECT userId,
+                   username,
+                   firstName,
+                   lastName,
+                   institution,
+                   role
+            FROM user
+            WHERE role = 'author'
+              AND (
+                    LOWER(firstName) LIKE ?
+                    OR LOWER(lastName) LIKE ?
+                    OR LOWER(CONCAT(firstName, ' ', lastName)) LIKE ?
+                    OR LOWER(username) LIKE ?
+                    OR LOWER(institution) LIKE ?
+              )
+            ORDER BY lastName ASC, firstName ASC
+        """;
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, like);
+            stmt.setString(2, like);
+            stmt.setString(3, like);
+            stmt.setString(4, like);
+            stmt.setString(5, like);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    authors.add(new User(
+                            rs.getString("userId"),
+                            rs.getString("firstName"),
+                            rs.getString("lastName"),
+                            rs.getString("username"),   // email -- username
+                            rs.getString("institution"),
+                            rs.getString("role")
+                    ));
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return authors;
+    }
+    
     public List<User> getAdmins() {
         return getUsersByRole("admin");
     }

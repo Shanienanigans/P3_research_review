@@ -1,0 +1,14 @@
+{{> fragments/html_header}}
+{{> fragments/top_bar}}
+
+<div class="container">
+    <a href="/papers/{{paper.paperId}}" class="action-button" style="margin: 8pt;">
+        ← Back to Paper
+    </a>
+
+    <h2 style="padding: 16pt;">Discussion: {{paper.title}}</h2>
+
+    {{> fragments/comments_container}}
+</div>
+
+{{> fragments/footer}}

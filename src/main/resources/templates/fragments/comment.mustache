@@ -1,11 +1,52 @@
-<div class="comment framed">
-    <div class="comment-body">
-        <div class="username">
-            <a href="/profile/{{user.userId}}">{{user.firstName}} {{user.lastName}}</a>
+<div class="discussion-thread">
+
+    <!-- Avatar -->
+    <div class="discussion-avatar">
+        <img src="{{user.profileImagePath}}" alt="{{user.firstName}}">
+    </div>
+
+    <!-- Thread body -->
+    <div class="discussion-thread-body">
+
+        <div class="discussion-username">
+            <a href="/profile/{{user.userId}}">
+                {{user.firstName}} {{user.lastName}}
+            </a>
         </div>
-        <div class="comment-date">{{commentDate}}</div>
-        <div class="comment-content">
+
+        <div class="discussion-date">{{createdAt}}</div>
+
+        <div class="discussion-content">
             {{content}}
         </div>
+
+        <!-- Action row (comment button to focus reply box) -->
+        <div class="discussion-actions">
+            <button type="button"
+                    class="far fa-comment"
+                    onclick="document.getElementById('reply-{{commentId}}').focus();">
+            </button>
+            <span class="discussion-action-count">{{repliesCount}}</span>
+        </div>
+
+        <!-- Replies -->
+        <div class="discussion-replies">
+            {{#replies}}
+                {{> fragments/discussion_reply}}
+            {{/replies}}
+        </div>
+
+        <!-- Reply box -->
+        <form method="post"
+              action="/discussion/{{paperId}}/add">
+            <input type="hidden" name="parentCommentId" value="{{commentId}}">
+            <input id="reply-{{commentId}}"
+                   class="short-input full"
+                   name="comment"
+                   type="text"
+                   placeholder="Reply…"
+                   required>
+        </form>
+
     </div>
 </div>

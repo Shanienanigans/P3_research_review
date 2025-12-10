@@ -9,7 +9,10 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -200,6 +203,26 @@ public class PaperService {
 
         return list;
     }
+    
+
+    // ---------------------------------------------------------
+    // LATEST PAPERS for HOME PAGE (top N)
+    // ---------------------------------------------------------
+    public List<BasicPaper> getLatestBasicPapers(int limit) {
+
+        // 已经按 uploadedAt DESC 排好序
+        List<BasicPaper> all = getAllBasicPapers();
+
+        if (all == null) {
+            return Collections.emptyList();
+        }
+
+        if (all.size() <= limit) {
+            return all;
+        }
+
+        return all.subList(0, limit);   // 只取前 limit 条
+    }
 
     // ---------------------------------------------------------
     // SEARCH PAPERS (title, authors, abstract)
@@ -296,7 +319,7 @@ public class PaperService {
 
 
     // ---------------------------------------------------------
-    // 5. SORT PAPERS (FINAL FIXED VERSION)
+    // 5. SORT PAPERS 
     // ---------------------------------------------------------
     public List<Paper> sortPapers(String sortBy) {
 
@@ -423,62 +446,140 @@ public class PaperService {
 
 
     // ---------------------------------------------------------
-    // 7. COMMENTS
+    // 7. COMMENTS (with threaded replies + reply counts)
     // ---------------------------------------------------------
     public List<Comment> getCommentsForPaper(String paperId) {
 
         final String sql = """
             SELECT c.commentId,
-                   c.userId,
-                   c.content,
-                   DATE_FORMAT(
+                c.paperId,
+                c.userId,
+                c.content,
+                DATE_FORMAT(
                         CONVERT_TZ(c.createdAt, '+00:00', '-04:00'),
                         '%b %e, %Y %l:%i %p'
-                   ) AS createdAt
+                ) AS createdAt,
+                c.parentCommentId
             FROM comment c
             WHERE c.paperId = ?
             ORDER BY c.createdAt ASC
         """;
 
-        List<Comment> comments = new ArrayList<>();
+        // Store all comments so we can attach replies to parents
+        Map<String, Comment> all = new LinkedHashMap<>();
 
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, paperId);
+            ResultSet rs = ps.executeQuery();
 
-            try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
 
-                while (rs.next()) {
-                    comments.add(new Comment(
-                            rs.getString("commentId"),
-                            paperId,
-                            rs.getString("userId"),
-                            rs.getString("content"),
-                            rs.getString("createdAt")
-                    ));
-                }
+                Comment c = new Comment(
+                    rs.getString("commentId"),
+                    rs.getString("paperId"),
+                    rs.getString("userId"),
+                    rs.getString("content"),
+                    rs.getString("createdAt"),
+                    userService.getUserById(rs.getString("userId")),
+                    rs.getString("parentCommentId")
+                );
+
+                c.setReplies(new ArrayList<>());  // initialize empty list
+                all.put(c.getCommentId(), c);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return comments;
+
+        // ---------------------------------------------------------
+        // STEP 1 — attach each reply to its parent
+        // ---------------------------------------------------------
+        for (Comment c : all.values()) {
+            String parentId = c.getParentCommentId();
+
+            if (parentId != null) {
+                Comment parent = all.get(parentId);
+                if (parent != null) {
+                    parent.getReplies().add(c);
+                }
+            }
+        }
+
+
+        // ---------------------------------------------------------
+        // STEP 2 — collect ONLY top-level comments
+        // ---------------------------------------------------------
+        List<Comment> topLevel = new ArrayList<>();
+
+        for (Comment c : all.values()) {
+            if (c.getParentCommentId() == null) {
+                topLevel.add(c);
+            }
+        }
+
+
+        // ---------------------------------------------------------
+        // STEP 3 — recursively compute reply counts for each thread
+        // ---------------------------------------------------------
+        for (Comment c : topLevel) {
+            computeReplyCounts(c);
+        }
+
+        return topLevel;
     }
 
-    public boolean addComment(String paperId, String userId, String content) {
+
+
+    // ---------------------------------------------------------
+    // Recursive helper: compute replyCount for each comment
+    // replyCount = total number of replies in this entire thread
+    // ---------------------------------------------------------
+    private int computeReplyCounts(Comment c) {
+
+        if (c.getReplies() == null || c.getReplies().isEmpty()) {
+            c.setReplyCount(0);
+            return 0;
+        }
+
+        int total = c.getReplies().size(); // direct replies
+
+        // include deeper replies
+        for (Comment child : c.getReplies()) {
+            total += computeReplyCounts(child);
+        }
+
+        c.setReplyCount(total);
+        return total;
+    }
+
+
+
+    // ---------------------------------------------------------
+    // INSERT NEW COMMENT OR REPLY
+    // ---------------------------------------------------------
+    public boolean addComment(String paperId, String userId, String content, String parentCommentId) {
 
         final String sql = """
-            INSERT INTO comment (paperId, userId, content)
-            VALUES (?, ?, ?)
+            INSERT INTO comment (paperId, userId, content, parentCommentId)
+            VALUES (?, ?, ?, ?)
         """;
 
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, paperId);
             ps.setString(2, userId);
             ps.setString(3, content);
+
+            if (parentCommentId == null || parentCommentId.isBlank()) {
+                ps.setNull(4, Types.INTEGER);
+            } else {
+                ps.setString(4, parentCommentId);
+            }
 
             return ps.executeUpdate() > 0;
 
@@ -673,6 +774,57 @@ public class PaperService {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+
+
+    // ---------------------------------------------------------
+    // 1.b UPDATE PAPER (title / abstract / authors / optional file)
+    // ---------------------------------------------------------
+    public boolean updatePaper(String paperId,
+                               String title,
+                               String abstractText,
+                               String authors,
+                               String newFilePathOrNull) {
+
+        String sql;
+
+        // 如果有新的 PDF 路径，就一起更新 filePath
+        if (newFilePathOrNull != null) {
+            sql = """
+                UPDATE paper
+                SET title = ?, abstract = ?, authors = ?, filePath = ?
+                WHERE paperId = ?
+            """;
+        } else {
+            // 否则只改元数据
+            sql = """
+                UPDATE paper
+                SET title = ?, abstract = ?, authors = ?
+                WHERE paperId = ?
+            """;
+        }
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, title);
+            ps.setString(2, abstractText);
+            ps.setString(3, authors);
+
+            if (newFilePathOrNull != null) {
+                ps.setString(4, newFilePathOrNull);
+                ps.setString(5, paperId);
+            } else {
+                ps.setString(4, paperId);
+            }
+
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

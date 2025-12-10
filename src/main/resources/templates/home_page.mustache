@@ -9,16 +9,62 @@
     <main class="page-main">
         <section class="page-card">
             <h1 class="page-title">Latest papers</h1>
-            <p class="page-subtitle">
-                Recently uploaded research from the community.
-            </p>
+            
+            {{#isResearcher}}
+                <p class="page-subtitle">
+                    Recently uploaded research from the community. As a <b>researcher</b>, you can upload new papers and see how reviewers respond.
+                </p>
+            {{/isResearcher}}
+
+            {{#isReviewer}}
+                <p class="page-subtitle">
+                    Recently uploaded research from the community. As a <b>reviewer</b>, you can browse submissions and provide structured feedback.
+                </p>
+            {{/isReviewer}}
+
+            {{^isResearcher}}
+            {{^isReviewer}}
+                <!-- 未登录或没有角色信息时的默认文案 -->
+                <p class="page-subtitle">
+                    Recently uploaded research from the community.
+                </p>
+            {{/isReviewer}}
+            {{/isResearcher}}
+
 
             {{#isNoContent}}
                 {{> fragments/no_content_message}}
             {{/isNoContent}}
 
             {{^isNoContent}}
-                {{> fragments/papers_container}}
+
+                {{#hasFollowedPapers}}
+                    <h2 class="page-subtitle" style="margin-top: 24px;">
+                        Papers from authors you follow
+                    </h2>
+
+                    <div class="papers-list">
+                        {{#followedPapers}}
+                            {{> fragments/basic_paper}}
+                        {{/followedPapers}}
+                    </div>
+                {{/hasFollowedPapers}}
+
+                <h2 class="page-subtitle" style="margin-top: 32px;">
+                    {{#hasFollowedPapers}}More from the community{{/hasFollowedPapers}}
+                    {{^hasFollowedPapers}}All latest papers{{/hasFollowedPapers}}
+                </h2>
+
+                <div class="papers-list">
+                    {{#otherPapers}}
+                        {{> fragments/basic_paper}}
+                    {{/otherPapers}}
+
+                    {{^otherPapers}}
+                        <p style="text-align:center;color:gray;">No papers found.</p>
+                    {{/otherPapers}}
+                </div>
+
             {{/isNoContent}}
         </section>
     </main>

@@ -18,7 +18,16 @@ CREATE TABLE IF NOT EXISTS user (
     profileImagePath VARCHAR(255) DEFAULT '/avatars/default.png',
     PRIMARY KEY (userId)
 );
-
+-- ======================================
+-- FOLLOW TABLE (USER FOLLOWS USER)
+-- ======================================
+CREATE TABLE IF NOT EXISTS follow (
+    followerId INT NOT NULL,
+    followeeId INT NOT NULL,
+    PRIMARY KEY (followerId, followeeId),
+    FOREIGN KEY (followerId) REFERENCES user(userId) ON DELETE CASCADE,
+    FOREIGN KEY (followeeId) REFERENCES user(userId) ON DELETE CASCADE
+);
 -- ======================================
 -- PAPERS TABLE
 -- ======================================
@@ -43,13 +52,14 @@ CREATE TABLE IF NOT EXISTS comment (
     userId INT NOT NULL,
     content TEXT NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    parentCommentId INT NULL,
     PRIMARY KEY (commentId),
     FOREIGN KEY (paperId) REFERENCES paper(paperId),
     FOREIGN KEY (userId) REFERENCES user(userId)
 );
 
 -- ======================================
--- REVIEWS TABLE (final simplified version)
+-- REVIEWS TABLE 
 -- ======================================
 CREATE TABLE IF NOT EXISTS review (
     reviewId INT AUTO_INCREMENT,

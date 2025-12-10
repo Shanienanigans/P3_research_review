@@ -21,7 +21,7 @@
                     <a href="/profile/{{paper.uploader.userId}}" class="link">
                         {{paper.uploader.firstName}} {{paper.uploader.lastName}}
                     </a>
-                    &nbsp;•&nbsp;
+                    &nbsp;&bull;&nbsp;
                     <span>Uploaded: {{paper.uploadDate}}</span>
                 </p>
 
@@ -29,11 +29,11 @@
                     <strong>Authors:</strong> {{paper.authors}}
                 </p>
 
-                <!-- DOWNLOAD BUTTON (now uses homepage button style) -->
+                <!-- DOWNLOAD BUTTON -->
                 <a href="/papers/{{paper.paperId}}/download"
                    class="btn-view"
                    style="display:inline-block; margin-top:15px;">
-                    📄 Download PDF
+                    Download PDF
                 </a>
             </div>
 
@@ -46,22 +46,42 @@
 
 
             <!-- ACTION BUTTONS -->
-            <div style="display:flex; gap:12px; margin:25px 0 35px 0;">
+            <!-- ACTION BUTTONS -->
+            <div style="display:flex; gap:12px; margin:25px 0 35px 0; align-items:center; flex-wrap:wrap;">
 
                 <!-- Write Review (homepage-style blue button) -->
-                <a href="/reviews/add/{{paper.paperId}}"
-                   class="btn-review">
-                    ✏️ Write a Review
+
+                {{#isReviewer}}
+                    <a href="/reviews/add/{{paper.paperId}}"
+                    class="btn-review">
+                        Write a Review
+                    </a>
+                {{/isReviewer}}
+
+                {{#isAuthor}}
+                    <a href="/papers/{{paper.paperId}}/edit"
+                    class="btn-view"
+                    style="background:#e9f3ff; color:#1a73e8;">
+                        Edit this Paper
+                    </a>
+                {{/isAuthor}}
+
+                <a href="/reviews/{{paper.paperId}}"
+                class="btn-view"
+                style="background:#f1f3f4; color:#202124;">
+                    View All Reviews
                 </a>
 
-                <!-- View All Reviews (homepage-style gray button) -->
-                <a href="/reviews/{{paper.paperId}}"
+                <!-- View All Discussions (homepage-style gray button) -->
+                <a href="/discussion/{{paper.paperId}}"
                    class="btn-view"
                    style="background:#f1f3f4; color:#202124;">
-                    📚 View All Reviews
+                    👥 Join the Discussion
                 </a>
 
             </div>
+
+
 
 
             <!-- REVIEWS -->

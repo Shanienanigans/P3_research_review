@@ -1,12 +1,18 @@
-<div class="comments">
+<div class="discussion-threads">
 
     {{#comments}}
-        {{> fragments/comment}}
+        {{> fragments/discussion_comment}}
     {{/comments}}
 
-    <form method="post" action="/paper/{{paperId}}/comment">
-        <input name="comment" class="short-input full" type="text"
-               placeholder="Add a comment…" required>
+    {{^comments}}
+        <p style="color:#777;">No discussions yet.</p>
+    {{/comments}}
+
+    <!-- New top-level comment -->
+    <form method="post" action="/discussion/{{paperId}}/add">
+        <input type="hidden" name="parentCommentId" value="">
+        <input class="short-input full" type="text" name="comment"
+               placeholder="Start a new discussion..." required>
     </form>
 
 </div>
